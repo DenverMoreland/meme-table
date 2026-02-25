@@ -3,16 +3,25 @@
 <head>
   <title>Meme Table</title>
   <style>
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    img { max-width: 150px; }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    img {
+      max-width: 150px;
+    }
   </style>
 </head>
 <body>
 
 <h2>Memes</h2>
 
-<label>Filter by boxes:</label>
+<label for="filter">Filter by boxes:</label>
 <select id="filter">
   <option value="">All</option>
 </select>
@@ -38,12 +47,14 @@
     .then(response => response.json())
     .then(json => {
       memes = json.data.memes;
+
       fillFilter(memes);
       showMemes(memes);
     });
 
   function fillFilter(memes) {
-    const counts = [...new Set(memes.map(m => m.box_count))];
+    const counts = [...new Set(memes.map(m => m.box_count))]
+                    .sort((a, b) => a - b);
 
     counts.forEach(count => {
       const option = document.createElement("option");
@@ -60,7 +71,7 @@
       const row = `
         <tr>
           <td>${meme.name}</td>
-          <td><img src="${meme.url}"></td>
+          <td><img src="${meme.url}" alt="${meme.name}"></td>
         </tr>
       `;
       tableBody.innerHTML += row;
