@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Meme Table</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    img { max-width: 150px; }
+  </style>
+</head>
+<body>
+
+<h2>Memes</h2>
+
+<label>Filter by boxes:</label>
+<select id="filter">
+  <option value="">All</option>
+</select>
+
+<table>
+  <thead>
+    <tr>
+      <th>Meme Name</th>
+      <th>Image</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
+
+<script>
+  const url = "https://api.imgflip.com/get_memes";
+  const tableBody = document.getElementById("tableBody");
+  const filter = document.getElementById("filter");
+
+  let memes = [];
+
+  fetch(url)
+    .then(response => response.json())
+    .then(json => {
+      memes = json.data.memes;
+      fillFilter(memes);
+      showMemes(memes);
+    });
+
+  function fillFilter(memes) {
+    const counts = [...new Set(memes.map(m => m.box_count))];
+
+    counts.forEach(count => {
+      const option = document.createElement("option");
+      option.value = count;
+      option.textContent = count;
+      filter.appendChild(option);
+    });
+  }
+
+  function showMemes(list) {
+    tableBody.innerHTML = "";
+
+    list.forEach(meme => {
+      const row = `
+        <tr>
+          <td>${meme.name}</td>
+          <td><img src="${meme.url}"></td>
+        </tr>
+      `;
+      tableBody.innerHTML += row;
+    });
+  }
+
+  filter.addEventListener("change", () => {
+    const value = filter.value;
+
+    if (value === "") {
+      showMemes(memes);
+    } else {
+      const filtered = memes.filter(m => m.box_count == value);
+      showMemes(filtered);
+    }
+  });
+</script>
+
+</body>
+</html>
